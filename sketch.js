@@ -14,7 +14,9 @@ let hovering = false
 // effect 1 variables 
 // we'll set this in a function
 let effect1Data
-
+const fx1NumImages = 30
+const fx1Steps = 30
+let fx1Count = 0
 // effect 2 variables
 // we'll set this in a function
 let effect2Data
@@ -114,7 +116,8 @@ const runImageEffect = (counter) => {
     // decide which effect to use
     switch(counter){
         case 0 : {
-            console.log('effect 1')     
+            effect1UpdatePositions()
+            effect1Display()   
             return
         }
         case 1 : {
@@ -131,7 +134,19 @@ const runImageEffect = (counter) => {
 
 
 const effect1Init = () => {
-
+    fx1Count = 0
+    effect1Data = Array.from({ length: fx1NumImages}, () => {
+        const destinationX = random(0, canvasWidth - fx2ImageSize)
+        const destinationY = random(0, canvasHeight - fx2ImageSize)
+        const startX = random(mainImageLeft, mainImageWidth)
+        const startY = random(mainImageTop, mainImageHeight)
+        const distanceX = destinationX - startX
+        const distanceY = destinationY - startY
+        return {
+            position: {x: startX, y: startY},
+            distancePerStep: {x: distanceX/fx1Steps, y: distanceY/fx1Steps}
+        }
+    })
 }
 
 const effect2Init = () => {
@@ -153,17 +168,36 @@ const resetEffects = () => {
     effect2Init()
 }
 
-const effect1  = () => {
-    effect1Images.forEach((img, i) => {
-        image(img, randomImagePositions[i].x, randomImagePositions[i].y, 150, 150)
-        background(255)
-        image(carouselImages[counter], x, y, 100, 100)
-        distx=destinationX-x
-        disty=destinationY-y
-        x+=distx/10
-        image(carouselImages[counter], x, y, 100, 100)
-        y+=disty/10
+const effect1UpdatePositions  = () => {
+    console.log(effect1Data)
+    if(fx1Count < fx1Steps){
+        effect1Data.forEach(datum => {
+            datum.position.x += datum.distancePerStep.x
+            datum.position.y += datum.distancePerStep.y
+        })
+        fx1Count++
+    }
+
+
+
+    // effect1Images.forEach((img, i) => {
+    //     image(img, randomImagePositions[i].x, randomImagePositions[i].y, 150, 150)
+    //     background(255)
+    //     image(carouselImages[counter], x, y, 100, 100)
+    //     distx=destinationX-x
+    //     disty=destinationY-y
+    //     x+=distx/10
+    //     image(carouselImages[counter], x, y, 100, 100)
+    //     y+=disty/10
+    // })
+}
+
+const effect1Display = () => {
+    background(255, 255, 255, 50)
+    effect1Data.forEach(datum => {
+        image(carouselImages[0],  datum.position.x,  datum.position.y, fx2ImageSize, fx2ImageSize)
     })
+   
 }
 
 
