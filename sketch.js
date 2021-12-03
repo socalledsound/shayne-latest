@@ -14,16 +14,15 @@ let hovering = false
 // effect 1 variables 
 // we'll set this in a function
 let effect1Data
-const fx1NumImages = 30
-const fx1Steps = 30
+const fx1ImageSize = 50
+const fx1NumImages = 100
+const fx1Steps = 10
 let fx1Count = 0
 // effect 2 variables
 // we'll set this in a function
 let effect2Data
 // start position, imagesize, numsteps, count
 const fx2ImageSize = 100
-const fx2StartX = canvasWidth/2
-const fx2StartY = canvasHeight/2
 const fx2Steps = 30
 let fx2Count = 0
 
@@ -51,7 +50,7 @@ function setup (){
             x,y
         }
     })
-    resetEffects()
+    resetEffects(canvasWidth/2, canvasHeight/2)
 }
 
 function draw(){
@@ -72,6 +71,11 @@ function mousePressed(){
 }
 
 function mouseMoved(){
+
+    if(counter === 1){
+        effect2Init(effect2Data.position.x, effect2Data.position.y)
+    }
+
     if(mouseX > mainImageLeft && 
         mouseX < mainImageLeft + mainImageWidth &&
         mouseY > mainImageTop && 
@@ -79,7 +83,7 @@ function mouseMoved(){
             hovering = true
         }else{
             if(hovering){
-                resetEffects()
+                resetEffects(canvasWidth/2, canvasHeight/2)
             }
             hovering = false
         }
@@ -126,6 +130,12 @@ const runImageEffect = (counter) => {
             //console.log('effect 2')
             return
         }
+
+        case 2 : {
+            effect3Display()
+            console.log('effect 3')
+            return
+        }
         default: 
             return
     }
@@ -136,8 +146,8 @@ const runImageEffect = (counter) => {
 const effect1Init = () => {
     fx1Count = 0
     effect1Data = Array.from({ length: fx1NumImages}, () => {
-        const destinationX = random(0, canvasWidth - fx2ImageSize)
-        const destinationY = random(0, canvasHeight - fx2ImageSize)
+        const destinationX = random((fx1ImageSize * 2), canvasWidth - (fx1ImageSize * 4))
+        const destinationY = random((fx1ImageSize * 2), canvasHeight - (fx1ImageSize * 4))
         const startX = random(mainImageLeft, mainImageWidth)
         const startY = random(mainImageTop, mainImageHeight)
         const distanceX = destinationX - startX
@@ -149,23 +159,30 @@ const effect1Init = () => {
     })
 }
 
-const effect2Init = () => {
-    const destinationX = random(0, canvasWidth - fx2ImageSize)
-    const destinationY = random(0, canvasHeight - fx2ImageSize)
-    const distanceX = destinationX - fx2StartX
-    const distanceY = destinationY - fx2StartY
+const effect2Init = (oldX, oldY) => {
+    // const destinationX = random(0, canvasWidth - fx2ImageSize)
+    // const destinationY = random(0, canvasHeight - fx2ImageSize)
+    const destinationX = mouseX - fx2ImageSize/2
+    const destinationY = mouseY - fx2ImageSize/2
+    const distanceX = destinationX - oldX
+    const distanceY = destinationY - oldY
     fx2Count = 0
     effect2Data = {
-        position: {x: fx2StartX, y: fx2StartY},
+        position: {x: oldX, y: oldY},
         distancePerStep: {x: distanceX/fx2Steps, y: distanceY/fx2Steps}
     }
 }
 
+const effect3Init = () => {
+    return
+}
 
-const resetEffects = () => {
+
+const resetEffects = (x, y) => {
     console.log('resetting effects')
     effect1Init()
-    effect2Init()
+    effect2Init(x, y)
+    effect3Init()
 }
 
 const effect1UpdatePositions  = () => {
@@ -195,7 +212,7 @@ const effect1UpdatePositions  = () => {
 const effect1Display = () => {
     background(255, 255, 255, 50)
     effect1Data.forEach(datum => {
-        image(carouselImages[0],  datum.position.x,  datum.position.y, fx2ImageSize, fx2ImageSize)
+        image(carouselImages[0],  datum.position.x,  datum.position.y, fx1ImageSize, fx1ImageSize)
     })
    
 }
@@ -214,4 +231,11 @@ const effect2UpdatePosition = () => {
 const effect2Display = () => {
         background(255, 255, 255, 50)
         image(carouselImages[1],  effect2Data.position.x,  effect2Data.position.y, fx2ImageSize, fx2ImageSize)
+}
+
+const effect3Display = () => {
+    background(0)
+    textSize(60)
+    fill(255)
+    text('hi shayne!' , canvasWidth/2, canvasHeight/2)
 }
